@@ -1,5 +1,7 @@
 # Compiled class file
 *.class
+dd-java-agent.jar
+logs/
 
 # Log file
 *.log
