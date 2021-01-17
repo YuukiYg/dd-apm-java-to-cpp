@@ -11,18 +11,35 @@ This application is a sample for calling C++ shared library from Java, and monit
 * Install dd-java-agent.jar
   * https://docs.datadoghq.com/ja/tracing/setup/java/?tab=springboot
 
-* Generate shared library by compiling C++ code.
-  * `gcc -shared -o libplus.so src/main/cpp/plus.cpp` for Linux
-  * `gcc -shared -o plus.dll src\main\cpp\plus.cpp` for Windows
-  * `gcc -shared -o libplus.dylib src/main/cpp/plus.cpp` for Mac
-
 * Set environment variables
   * DD_LOGS_INJECTION=true
   * DATADOG_API_KEY=your_api_key
-
-## How to Run
-  * Compile
-    * `mvn install -Dmaven.test.skip=true`
+  * DD_HOSTNAME=your_dd_hostname
+  * DD_HOSTPORT=your_dd_hostport
+  * LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/
+  * DD_APM_ENABLED=true
+* Compile C++
+  * make
+    ```
+    get_latest_release() {wget -qO- "https://api.github.com/repos/$1/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/';} && \
+    VERSION="$(get_latest_release DataDog/dd-opentracing-cpp)" && \
+    wget https://github.com/DataDog/dd-opentracing-cpp/archive/${VERSION}.tar.gz -O dd-opentracing-cpp.tar.gz && \
+    mkdir -p dd-opentracing-cpp/.build && \
+    tar zxvf dd-opentracing-cpp.tar.gz -C ./dd-opentracing-cpp/ --strip-components=1 && \
+    cd dd-opentracing-cpp/.build && \
+    # Download and install the correct version of opentracing-cpp, & other deps.
+    ../scripts/install_dependencies.sh && \
+    cmake .. && \
+    make && \
+    sudo make install
+    ```
+  * `sudo ldconfig`
+  * `gcc -shared -fPIC -std=c++14 -o libplus.so  plus.cpp -I../deps/include -L../deps/lib/ -ldd_opentracing -lopentracing`
+* Compile Java
+  * `mvn install -Dmaven.test.skip=true`
+    * Confirm $PATH points to Java11 for compiling using mvn.
+ 
+## How to Run   
   * Run
     * `java -javaagent:/path/to/dd-java-agent.jar -jar java2cpp-0.0.1-SNAPSHOT.jar`
   * Access your app.
