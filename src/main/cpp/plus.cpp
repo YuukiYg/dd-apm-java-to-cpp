@@ -15,14 +15,14 @@ int plus(int m, int n) {
   unsigned int dd_hostport_int;
 
   // 環境変数からAgentのHostnameを取得する。取得できない場合、"localhost" をデフォルトとして設定する。
-  if ((strenv = getenv("DD_HOSTNAME")) != NULL) {
+  if ((strenv = getenv("DD_AGENT_HOST")) != NULL) {
     strcat(dd_hostname, strenv);
   }else{
     strcat(dd_hostname, "localhost");
   }
 
   // 環境変数からAgentのHostportを取得する。取得できない場合、8126をデフォルトとして設定する
-  if((strenv = getenv("DD_HOSTPORT")) != NULL){
+  if((strenv = getenv("DD_AGENT_PORT")) != NULL){
     strcat(dd_hostport, strenv);
   }else{
     strcat(dd_hostport, "8126");
